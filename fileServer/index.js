@@ -32,4 +32,19 @@ app.get("/files/:filename" , function(req,res){
         });
     });
 });
+app.post("/" , function(req,res){
+    res.status(404).json({
+        msg : "Not defined"
+    })
+});
+app.put("/" , function(req,res){
+    res.status(404).json({
+        msg : "Not defined"
+    })
+});
+app.delete("/" , function(req,res){
+    res.status(404).json({
+        msg : "Not defined"
+    })
+});
 app.listen(3000);
