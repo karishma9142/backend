@@ -1,13 +1,35 @@
 const fs = require("fs");
-function main(fileName){
-    fs.readFile(fileName, "utf-8", function(err,data){
-        let total=0;
-        for(let i=0;i<data.length;i++){
-            if(data[i]===" "){
-                total++;
-            }
+const path = require("path");
+const express = require("express");
+const { error } = require("console");
+const app = express();
+
+app.get("/files" , function(req,res){
+    const folderPath = path.join(__dirname, "files");
+    fs.readdir(folderPath , function(err,files){
+        if(err){
+            return res.status(500).json({
+                error: "unable to read file"
+            })
         }
-        console.log(total);
-    })
-}
-main("a.txt");
+        res.json(files);
+    });
+});
+
+app.get("/files/:filename" , function(req,res){
+    const fileName = req.params.filename;
+    const filePath = path.join(__dirname, "files", fileName);
+    console.log(fileName);
+    fs.readFile(filePath,"utf-8" , function(err,data){
+        if (err) {
+            return res.status(404).json({
+              error: "File not found"
+            });
+        }
+        res.json({
+            fileName : fileName,
+            content : data
+        });
+    });
+});
+app.listen(3000);
