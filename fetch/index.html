@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    TODO'S
+    <button onclick="dummy(1)">btm1</button>
+    <button onclick="dummy(2)">btm2</button>
+    <button onclick="dummy(3)">btm3</button>
+    <div id="res"></div>
+    <script>
+        async function dummy(ID) {
+            let response = await fetch(`https://dummyjson.com/todos/${ID}` , {
+                method : "GET"
+            }) 
+            let data = await response.json();
+            console.log(data)
+            document.getElementById("res").innerHTML = JSON.stringify(data);
+        }
+        dummy(ID);
+    </script>
+</body>
+</html>
