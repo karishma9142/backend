@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>get multiplicaion</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.7.6/axios.min.js"></script>
+    <script>
+        async function getdevision(){
+            const a = document.getElementById("a").value;
+            const b = document.getElementById("b").value;
+            const response = await axios.post("http://localhost:3000/divide" , {
+                a:a,
+                b:b,
+            });
+            console.log(response.data);
+        }
+    </script>
+</head>
+<body>
+    <input type="text" id="a" placeholder="first value">
+    <input type="text" id="b" placeholder="Second value">
+    <button onclick="getdevision()">see answer</button>
+</body>
+</html>
