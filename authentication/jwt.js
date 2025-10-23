@@ -5,8 +5,24 @@ const JWT_SECRET="karishmaasdfghjkl"
 app.use(express.json());
 
 const user = []; ///  stored in server
+// midleware
+function auth(req,res,next){
+    const token = req.headers.token;
+    const decodedInformation = jwt.verify(token,JWT_SECRET);
+    if(decodedInformation.username){
+        req.username=decodedInformation.username;
+        next();
+    }else{
+        res.send("you are not signed in")
+    }
 
-app.post("/signup" , function(req,res){
+}
+function logger(req,res,next){
+    console.log(req.method+" request come");
+    next();
+}
+
+app.post("/signup" ,logger , function(req,res){
     // input validation using ZOD
     const username = req.body.username;
     const password = req.body.password;
@@ -25,7 +41,7 @@ app.post("/signup" , function(req,res){
     })
     console.log(user);
 })
-app.post("/signin" , function(req,res){
+app.post("/signin" ,logger , function(req,res){
     const username = req.body.username;
     const password = req.body.password;
 
@@ -53,13 +69,11 @@ app.post("/signin" , function(req,res){
     }
     console.log(user);
 });
-app.get("/me" , function(req,res){
-    const token = req.headers.token; //jwt
-    const decodedInformation = jwt.verify (token,JWT_SECRET); //convert jwt to username
-    const username = decodedInformation.username; 
+app.get("/me" ,auth , function(req,res){
+    const username = req.username; 
     let fonuduser = null;
     for(let i=0;i<user.length;i++){
-        if(user[i].username==username){
+        if(user[i].username===username){
             fonuduser=user[i];
         }
     }
@@ -68,10 +82,6 @@ app.get("/me" , function(req,res){
             username : fonuduser.username,
             password : fonuduser.password
         })
-    }else{
-       res.json({
-            msg : "invalid token"
-       })
     }
 })
 app.listen(3000);
