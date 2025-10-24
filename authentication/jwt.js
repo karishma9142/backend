@@ -16,11 +16,16 @@ function auth(req,res,next){
         res.send("you are not signed in")
     }
 
-}
+};
+
 function logger(req,res,next){
     console.log(req.method+" request come");
     next();
-}
+};
+
+app.get("/" , function(req,res){
+    res.sendFile(__dirname +  "/public/index.html"); // hosted fe and be in same domain localhost:3000
+});
 
 app.post("/signup" ,logger , function(req,res){
     // input validation using ZOD
@@ -40,7 +45,8 @@ app.post("/signup" ,logger , function(req,res){
         msg : "you are sgined in"
     })
     console.log(user);
-})
+});
+
 app.post("/signin" ,logger , function(req,res){
     const username = req.body.username;
     const password = req.body.password;
@@ -69,6 +75,7 @@ app.post("/signin" ,logger , function(req,res){
     }
     console.log(user);
 });
+
 app.get("/me" ,auth , function(req,res){
     const username = req.username; 
     let fonuduser = null;
@@ -83,5 +90,6 @@ app.get("/me" ,auth , function(req,res){
             password : fonuduser.password
         })
     }
-})
+});
+
 app.listen(3000);
