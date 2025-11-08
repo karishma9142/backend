@@ -46,14 +46,50 @@ app.post("/signin" ,async function(req,res){
     }
 });
 
-app.post("/todo" , function(req,res){
-     
+app.post("/todo" ,async function(req,res){
+    const title = req.body.title;
+    let done = false;
+    const token = req.headers.token;
+    const decoded = jwt.verify(token, jwt_secret);
+    const userId = decoded.id;
+    const foundUser = await UserModel.findOne({ _id: userId });
+    if(!foundUser){
+        res.status(403).json({ msg : "invalid credential"});
+    } else{
+        await TodoModel.create({
+            title : title ,
+            done : done ,
+            userId : userId 
+        })
+        res.json({
+            msg : "succesfult added to your todos"
+        })
+    }
 });
 
-app.get("/todos" , function(req,res){
-    
-});
-
+app.get("/todos", async function (req, res) {
+    try {
+      const token = req.headers.token;
+      if (!token) {
+        return res.status(403).json({ msg: "Token missing" });
+      }
+  
+      const decoded = jwt.verify(token, jwt_secret);
+      const userId = decoded.id;
+  
+      const foundTodos = await TodoModel.find({ userId: userId });
+  
+      if (!foundTodos || foundTodos.length === 0) {
+        return res.status(200).json({ msg: "No todos found" });
+      }
+  
+      res.status(200).json({ todos: foundTodos });
+    } catch (err) {
+      console.error("Error fetching todos:", err);
+      res.status(500).json({ msg: "Error fetching todos" });
+    }
+  });
+  
 app.listen(3000, () => {
     console.log("Server running on port 3000");
 });
