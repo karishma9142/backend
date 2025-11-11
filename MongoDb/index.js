@@ -1,4 +1,6 @@
 const express = require("express");
+const { z } = require("zod");
+const cors = require("cors");
 const { UserModel, TodoModel } = require("./Db");
 const jwt = require("jsonwebtoken");
 const jwt_secret = "karishmrawat1234567890";
@@ -6,34 +8,49 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 mongoose.connect("mongodb+srv://admin:ieiDNs5hmV2mhVFL@cluster0.tp8kfsa.mongodb.net/todo-karishma");
 const app = express();
+app.use(cors());
 app.use(express.json());
+
+const signupschema = z.object({ 
+    email: z.string().email("enter valid email").min(10).max(50),
+    password: z.string().min(6,"enter at least 6 characters").max(20),
+    name  : z.string().min(4).max(20)
+  });
 
 app.post("/signup", async function (req, res) {
     const email = req.body.email;
     const password = req.body.password;
     const name = req.body.name;
 
-    try {
-        if (!email || !password || !name) {
-            return res.status(400).json({ msg: "All fields are required." });
-        }
-        const hashedPassword = await bcrypt.hash(password, 5);
-        console.log(hashedPassword);
-        await UserModel.create({
-            email: email,
-            password: hashedPassword,
-            name: name
-        })
-        res.json({
-            msg: "you are logged in "
-        })
-    } catch (error) {
-        if (error.code === 11000) {
-            // Duplicate email
-            res.status(400).json({ msg: "Email already exists!" });
-        } else {
-            console.error("Signup error:", error);
-            res.status(500).json({ msg: "Error while signing up" });
+    const result = signupschema.safeParse(req.body);
+    if(!result.success){
+        return res.status(403).json({
+            msg : "incorrect formate" ,
+            error : result.error
+        });
+    }else{
+        try {
+            if (!email || !password || !name) {
+                return res.status(400).json({ msg: "All fields are required." });
+            }
+            const hashedPassword = await bcrypt.hash(password, 5);
+            console.log(hashedPassword);
+            await UserModel.create({
+                email: email,
+                password: hashedPassword,
+                name: name
+            })
+            res.json({
+                msg: "you are logged in "
+            })
+        } catch (error) {
+            if (error.code === 11000) {
+                // Duplicate email
+                res.status(400).json({ msg: "Email already exists!" });
+            } else {
+                console.error("Signup error:", error);
+                res.status(500).json({ msg: "Error while signing up" });
+            }
         }
     }
 });
