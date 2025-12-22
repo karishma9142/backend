@@ -1,16 +1,23 @@
 //      interface
 // An interface in TypeScript is used to define the structure (shape) of an object.
+
+interface address {
+    streetName : string,
+    houseNo : number,
+    city? : string, // optional
+    country? : string // optional
+}
 interface userType {
     name:string,
     age : number,
-    address : {
-        streetName : string,
-        houseNo : number
-    }
+    address?:  address // address is  optional 
+}
+interface imployeType{
+    address? : address
 }
 function greet(user : userType) {
     console.log("hello " + user.name);
-    console.log(user.address.streetName);
+    console.log(user.address?.streetName);
 }
 
 let user : userType = {
