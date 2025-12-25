@@ -15,3 +15,12 @@ let user2:User={
     age:38
 }
 console.log(addAge(user1,user2));
+
+
+// you can change the internal value of const not variable 
+// const a = [1,3,2,2];
+// a[0]=5;
+
+// but not the variable itself
+// const b=9;
+// b=3;
