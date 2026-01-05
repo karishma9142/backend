@@ -11,10 +11,25 @@ app.post("/signup", async (req, res) => {
     const password = req.body.password;
     const username = req.body.username;
     const email = req.body.email;
+
+    const city = req.body.city;
+    const country = req.body.country;
+    const pincode = req.body.pincode;
+    const street = req.body.street;
+
     try {
-        const sqlquery = "INSERT INTO users (username, password, email) VALUES ($1, $2, $3)";
-        const valuse = [username, password, email] // sql injection
-        await pgClient.query(sqlquery , valuse);
+        const usersqlquery = "INSERT INTO users (username, password, email) VALUES ($1, $2, $3) RETURNING id";
+        const addressquery = "INSERT INTO address (city , country , pincode , street , user_id) VALUES ($1 , $2 , $3 , $4 , $5)";
+        const uservaluse = [username, password, email] // sql injection
+
+        await pgClient.query("BEGIN"); // START A TRANSITATION
+         
+        const responce = await pgClient.query(usersqlquery , uservaluse);
+        const userid = responce.rows[0].id;
+        const addressvalue = [city , country , pincode , street , userid]; // relationships => forign key
+        await pgClient.query(addressquery , addressvalue);
+
+        await pgClient.query("COMMIT");
         res.json({
             msg: "you are signed up"
         })
