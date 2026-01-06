@@ -1,4 +1,4 @@
-import express from "express";
+import express, { response } from "express";
 import { Client } from "pg";
 
 const app = express();
@@ -39,10 +39,28 @@ app.post("/signup", async (req, res) => {
             msg : "error while sign up " + error
         })
     }
-    
-
-
 })
+
+
+app.get("/metadeta" , async(req,res)=>{
+    const id=req.query.id;
+    
+    // const quesry1="SELECT username , email , id FROM users WHERE id=$1";
+    // const resonance1= await pgClient.query(quesry1,[id]);
+
+    // const query2="SELECT *FROM address WHERE user_id=$1";
+    // const responce2=await pgClient.query(query2,[id]);
+
+    // doing samething using join
+
+    const query ="SELECT users.username , users.email , users.id , address.country , address.city , address.street , address.pincode FROM users JOIN address ON users.id=address.user_id WHERE users.id=$1";
+    const responce = await pgClient.query(query , [id]);
+
+    res.json({
+        metadat : responce.rows[0]
+    })
+})
+
 app.listen(3000);
 // async function main() {
 //     await pgClient.connect();
