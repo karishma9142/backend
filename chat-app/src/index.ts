@@ -1,18 +1,33 @@
-import {WebSocketServer} from "ws";
+import {WebSocketServer , WebSocket} from "ws";
 
 const wss = new WebSocketServer({port : 8080});
 
-let userCount = 0;
+interface User {
+    socket : WebSocket ,
+    room : string
+}
+let allSockets : User[] = [];
 wss.on("connection" , function(socket){
-    userCount = userCount+1;
-    socket.send("hii");
-    console.log("connected");
-    console.log(`count of users ${userCount}`); 
 
     socket.on("message" , (message) => {
-        console.log(`message recivied ${message.toString()}`);
-        setInterval(() => {
-            socket.send(`${message.toString()} sent from the sever`);
-        },1000)
+        const parsedMesage = JSON.parse(message.toString());
+        if(parsedMesage.type === "join"){
+            allSockets.push({
+                socket,
+                room : parsedMesage.payload.roomId
+            })
+        }
+        else if(parsedMesage.type === "chat"){
+            const currentUserRoom = allSockets.find((x) => x.socket == socket)?.room; 
+            for(let i=0;i<allSockets.length;i++){
+                if(allSockets[i]?.room == currentUserRoom){
+                    allSockets[i]?.socket .send(parsedMesage.payload.message)
+                }
+            }
+        }
+    })
+
+    socket.on("disconnect" ,()=>{
+        
     })
 })
