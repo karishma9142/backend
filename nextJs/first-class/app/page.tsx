@@ -2,8 +2,8 @@ import axios from "axios";
 import Link from "next/link";
 
 export default async function Home() {
-  const response = await axios.get("http://localhost:3000/api/v1/user/details");
-  const data = response.data;
+  // const response = await axios.get("http://localhost:3000/api/v1/user/details");
+  // const data = response.data;
   return (
     <div className="flex flex-col gap-4 items-center">
       <br />
