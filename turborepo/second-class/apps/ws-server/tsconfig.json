@@ -1,3 +1,7 @@
 {
-  "extends" : "@repo/typescript-config/backneds.json"
+  "extends" : "@repo/typescript-config/backneds.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": "./src"
+  },
 }
